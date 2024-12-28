@@ -1,8 +1,8 @@
+# !! CREDIT TO: RealPython on showcasing the ideas I learnt for implementing a Hashtable in Python !!
 
-# Create a deleted object to mark elements that are deleted
 class HashTable:
     def __init__(self, size=8, load_factor_thres=0.75):
-        # Handle argument if not int, or less than 1. 
+        # Argument handling when calling the Hashtable class
         if type(size) is not int:
             raise TypeError("Size must be an integer")
         elif size < 1:
@@ -19,9 +19,11 @@ class HashTable:
 
 
     def _hash(self, key):
+        # Hash function used for key indexing
         return abs(hash(key)) % self.size 
     
     def _hash2(self, key):
+        # Hash function used for step size
         largest_prime = self.__get_largest_prime()
         if self.size != 1:
             return largest_prime - self._hash(key) % largest_prime
@@ -47,7 +49,7 @@ class HashTable:
 
     def __getitem__(self, key):
         for _, pair in self._probe(key): 
-        # Error handling if the index found does NOT exist. 
+        # Error handling if the index found does NOT exist
             if pair is None:
                 raise KeyError(str(key) + " does not exist")
             if pair[0] == key:
@@ -58,7 +60,7 @@ class HashTable:
         for index, pair in self._probe(key):
             if pair is None:
                 raise KeyError("Key does not exist to begin with.")
-        # Error handling if the index found does NOT exist. 
+        # Error handling if the index found does NOT exist
             if pair[0] == key:
         # Deletes the pair from the hashmap
                 del self._pairs[index]
@@ -67,6 +69,7 @@ class HashTable:
             raise KeyError(key)
 
     def __setitem__(self, key, value):
+        # Resize the hashtable when the load factor is reached
         if self.load_factor >= self._load_factor_thres:
             self._auto_resize()
         for index, pair in self._probe(key):
@@ -75,7 +78,7 @@ class HashTable:
                 break
 
     def __iter__(self):
-        # Allows iterable of dictionary, returns keys.
+        # Allows iterable of dictionary, returns keys
         yield from self.keys
 
     def __str__(self):
@@ -91,24 +94,23 @@ class HashTable:
     def pairs(self):
         return {pair for pair in self._pairs if pair}
     @property
-    # When the key property is called, each key is returned.
+    # When the key property is called, each key is returned
     def keys(self):
         return {pair[0] for pair in self._pairs if pair}
     @property
-    # When the value property is called, each value is returned.
+    # When the value property is called, each value is returned
     def values(self):
         return {pair[1] for pair in self._pairs if pair}
     @property
+    # Returns the load factor of the Hashtable
     def load_factor(self):
         return len(self.pairs) / self.size
 
-    # Here, we are using a double hashing function for probing in the hashtable.
+    # Here, we are using a double hashing function for probing in the hashtable
     def _probe(self, key):
         index = self._hash(key)
         step_size = self._hash2(key)
         self._collisioncount = 0
-        #print("Index is:", index) 
-        #print("Step size is:", step_size)
         index = (index + (self._collisioncount * step_size)) % self.size 
         for _ in range(self.size):
             if self._pairs[index]:
@@ -121,3 +123,4 @@ class HashTable:
         for key, value in self.pairs:
             copy[key] = value
         self._pairs = copy._pairs
+        
